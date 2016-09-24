@@ -1,0 +1,30 @@
+---
+- hosts: test-kitchen
+
+  vars:
+    logstash_heap_size: "256m"
+    logstash_input_configs:
+      - |
+        file {
+                path => ["/var/log/boot.log"]
+           }
+      - |
+        beats {
+                port => 5044
+           }
+    logstash_output_configs:
+      - |
+        stdout {
+                codec => rubydebug
+            }
+      - |
+        elasticsearch {
+                hosts => "localhost:9200"
+                manage_template => false
+                index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+                document_type => "%{[@metadata][type]}"
+            }
+
+  roles:
+    - wunzeco.java
+    - ansible-logstash

@@ -1,0 +1,6 @@
+---
+# vars file for elasticsearch
+
+elasticsearch_packages: []
+
+elasticsearch_gpg_key: http://packages.elastic.co/GPG-KEY-elasticsearch

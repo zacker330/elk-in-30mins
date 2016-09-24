@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+
+JAVA_HOME={{JAVA_HOME}}
+
+#ES_USER=elasticsearch
+#ES_GROUP=elasticsearch
+
+MAX_LOCKED_MEMORY=unlimited
+ES_HEAP_SIZE={{ elasticsearch_heap_size }}
+#ES_HEAP_NEWSIZE=
+#ES_DIRECT_SIZE=
+
+MAX_OPEN_FILES=65535
+
+# Maximum number of VMA (Virtual Memory Areas) a process can own
+#MAX_MAP_COUNT=262144
+
+#ES_HOME=/usr/share/elasticsearch
+#CONF_DIR=/etc/elasticsearch
+#CONF_FILE=/etc/elasticsearch/elasticsearch.yml
+#PID_DIR=/var/run/elasticsearch
+DATA_DIR={{ elasticsearch_data_dir | default(elasticsearch_default_data_dir) }}
+#WORK_DIR=/tmp/elasticsearch
+#LOG_DIR=/var/log/elasticsearch
+#ES_GC_LOG_FILE=/var/log/elasticsearch/gc.log
+
+# Additional Java OPTS
+#ES_JAVA_OPTS=
+
+# Configure restart on package upgrade (true, every other setting will lead to not restarting)
+#RESTART_ON_UPGRADE=true

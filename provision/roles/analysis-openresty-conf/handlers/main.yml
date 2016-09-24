@@ -1,0 +1,4 @@
+---
+# handlers file for cdnfront-openresty-conf
+- name: restart nginx
+  service: name="nginx" state="restarted"

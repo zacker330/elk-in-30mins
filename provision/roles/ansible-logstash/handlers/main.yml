@@ -1,0 +1,11 @@
+---
+# 
+# - name: Validate logstash config
+#   command: >
+#       "JAVA_HOME={{JAVA_HOME}} {{ logstash_install_dir }}/bin/logstash"
+#         --configtest --config "{{ logstash_conf_dir }}"
+#   become_user: root
+
+- name: Restart logstash
+  service: name=logstash state=restarted
+  sudo: yes

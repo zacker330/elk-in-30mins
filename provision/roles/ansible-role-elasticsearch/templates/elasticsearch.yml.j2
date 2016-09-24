@@ -1,0 +1,45 @@
+# {{ ansible_managed }}
+
+{% if elasticsearch_bind == '0.0.0.0' %}
+network.host: [{{ elasticsearch_bind }}]
+http.host: [{{ elasticsearch_bind }}]
+transport.host: [{{ elasticsearch_bind }}]
+{% elif elasticsearch_bind == '127.0.0.1' %}
+network.host: [_local_]
+http.host: [_local_]
+transport.host: [_local_]
+{% else %}
+{# Always ensure access is available via localhost #}
+network.host: [_local_, {{ elasticsearch_bind }}]
+network.publish_host: [{{ elasticsearch_bind }}]
+http.host: [_local_, {{ elasticsearch_bind }}]
+http.publish_host: [{{ elasticsearch_bind }}]
+transport.host: [_local_, {{ elasticsearch_bind }}]
+transport.publish_host: [{{ elasticsearch_bind }}]
+{% endif %}
+
+http.port: {{ elasticsearch_port_http }}
+transport.tcp.port: {{ elasticsearch_port_transport }}
+
+cluster.name: {{ elasticsearch_cluster_name }}
+node.name: {{ elasticsearch_node_name }}
+
+path.data: {{ elasticsearch_data_dir | default(elasticsearch_default_data_dir) }}
+path.logs: /var/log/elasticsearch
+
+action.destructive_requires_name: true
+
+discovery.zen.ping.multicast.enabled: false
+{% if groups[elasticsearch_group_name] is defined and elasticsearch_bind != '127.0.0.1' %}
+discovery.zen.ping.unicast.hosts: [{% for node in groups[elasticsearch_group_name]
+  %}"{{ hostvars[node]['ansible_eth0']['ipv4']['address'] }}:{{ elasticsearch_port_transport }}"{%
+  if not loop.last %},{% endif %}{% endfor %}]
+{% else %}
+{%  if elasticsearch_bind == '0.0.0.0' or elasticsearch_bind == '127.0.0.1' %}
+discovery.zen.ping.unicast.hosts: ["127.0.0.1:{{ elasticsearch_port_transport }}"]
+{%  else %}
+discovery.zen.ping.unicast.hosts: ["{{ elasticsearch_bind }}:{{ elasticsearch_port_transport }}"]
+{%  endif %}
+{% endif %}
+
+bootstrap.mlockall: true

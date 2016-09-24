@@ -1,0 +1,5 @@
+---
+logstash_download_url: "https://download.elastic.co/logstash/logstash/logstash-2.3.4.tar.gz"
+logstash_version: logstash-2.3.4
+es_host: localhost
+es_port: 9200

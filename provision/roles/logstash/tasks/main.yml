@@ -1,0 +1,20 @@
+---
+- stat: path="/usr/local/logstash"
+  register: logstash
+
+- name: download logstash
+  get_url: url="{{logstash_download_url}}" dest="/tmp" owner={{ user }} group={{ user_group }}
+  when: logstash.stat.exists == False
+  tags:
+    - install
+
+- name: unarchive logstash
+  unarchive: src="/tmp/{{logstash_version}}.tar.gz" dest="/usr/local/" owner={{ user }} group={{ user_group }} copy=no
+  when: logstash.stat.exists == False
+
+  tags:
+    - install
+
+- file: src="/usr/local/{{logstash_version}}" dest="/usr/local/logstash" owner={{ user }} group={{ user_group }} state=link
+  tags:
+    - install

@@ -1,0 +1,31 @@
+---
+# RedHat-specific package tasks for elasticsearch
+
+- include_vars: redhat.yml
+
+- name: Install ElasticSearch repository
+  yum_repository:
+    name: elasticsearch
+    description: ElasticSearch Repository
+    file: elasticsearch
+    baseurl: "{{ elasticsearch_repository.url }}"
+    gpgkey: "{{ elasticsearch_gpg_key }}"
+    gpgcheck: yes
+
+- name: Install ElasticSearch
+  yum:
+    name: "{{ item }}"
+    update_cache: yes
+    state: installed
+  with_items:
+    "{{ elasticsearch_packages }}"
+
+- name: Configure ElasticSearch Defaults
+  template:
+    src: elasticsearch.j2
+    dest: /etc/sysconfig/elasticsearch
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    restart elasticsearch

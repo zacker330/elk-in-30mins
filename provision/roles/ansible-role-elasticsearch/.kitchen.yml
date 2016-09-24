@@ -1,0 +1,78 @@
+---
+
+platforms:
+  - name: debian-7
+    driver:
+      tags:
+        Name: ansible-test-kitchen-role-elasticsearch-debian-7
+        CreatedBy: TestKitchen
+        TestKitchenRole: elasticsearch
+        TestKitchenPlatform: debian-7
+  - name: debian-8
+    driver:
+      tags:
+        Name: ansible-test-kitchen-role-elasticsearch-debian-8
+        CreatedBy: TestKitchen
+        TestKitchenRole: elasticsearch
+        TestKitchenPlatform: debian-8
+  - name: centos-6
+    # Ruby 2.0 is installed in custom location. Override these calls to ensure
+    # that serverspec can be installed and run (otherwise it won't be found)
+    verifier:
+      bundler_path: /opt/rh/ruby200/root/usr/local/bin
+      rspec_path: /opt/rh/ruby200/root/usr/local/bin
+    driver:
+      tags:
+        Name: ansible-test-kitchen-role-elasticsearch-centos-6
+        CreatedBy: TestKitchen
+        TestKitchenRole: elasticsearch
+        TestKitchenPlatform: centos-6
+  - name: centos-7
+    verifier:
+      bundler_path: /opt/rh/ruby200/root/usr/local/bin
+      rspec_path: /opt/rh/ruby200/root/usr/local/bin
+    driver:
+      tags:
+        Name: ansible-test-kitchen-role-elasticsearch-centos-7
+        CreatedBy: TestKitchen
+        TestKitchenRole: elasticsearch
+        TestKitchenPlatform: centos-7
+  - name: ubuntu-14.04
+    driver:
+      tags:
+        Name: ansible-test-kitchen-role-elasticsearch-ubuntu-1404
+        CreatedBy: TestKitchen
+        TestKitchenRole: elasticsearch
+        TestKitchenPlatform: ubuntu-14.04
+  - name: ubuntu-16.04
+    driver:
+      tags:
+        Name: ansible-test-kitchen-role-elasticsearch-ubuntu-1604
+        CreatedBy: TestKitchen
+        TestKitchenRole: elasticsearch
+        TestKitchenPlatform: ubuntu-16.04
+
+suites:
+  - name: elasticsearch
+    excludes:
+      - debian-8
+      - centos-6
+      - ubuntu-14.04
+      - ubuntu-16.04
+    verifier:
+      patterns:
+        - "roles/*/test/integration/elasticsearch/serverspec/*_spec.rb"
+
+provisioner:
+  name: ansible_playbook
+  hosts: all
+  requirements_path: test/requirements.yml
+  require_ruby_for_busser: true
+  require_chef_for_busser: false
+  require_ansible_omnibus: true
+
+verifier:
+  name: serverspec
+  sudo_path: true
+  bundler_path: /usr/local/bin
+  rspec_path: /usr/local/bin

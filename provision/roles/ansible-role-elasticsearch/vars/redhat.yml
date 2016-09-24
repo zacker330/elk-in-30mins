@@ -1,0 +1,20 @@
+---
+# RedHat-specific vars file for elasticsearch
+
+elasticsearch_repository:
+  url: http://packages.elastic.co/elasticsearch/2.x/centos
+
+elasticsearch_packages:
+  - elasticsearch
+# - rsyslog-elasticsearch
+
+elasticsearch_config:
+  master: /etc/elasticsearch/elasticsearch.yml
+  logging: /etc/elasticsearch/logging.yml
+  owner: root
+  data: elasticsearch
+  group: elasticsearch
+
+elasticsearch_service: elasticsearch
+
+elasticsearch_default_data_dir: /var/lib/elasticsearch

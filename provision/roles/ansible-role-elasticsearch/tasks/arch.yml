@@ -1,0 +1,21 @@
+---
+# ArchLinux-specific package tasks for elasticsearch
+
+- include_vars: arch.yml
+
+- name: Install ElasticSearch
+  pacman:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    "{{ elasticsearch_packages }}"
+
+- name: Configure ElasticSearch Defaults
+  template:
+    src: elasticsearch.j2
+    dest: /etc/default/elasticsearch
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    restart elasticsearch

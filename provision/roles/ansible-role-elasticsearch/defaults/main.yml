@@ -1,0 +1,17 @@
+---
+# defaults file for elasticsearch
+
+elasticsearch_bind: 192.168.5.50
+elasticsearch_port_http: 9200
+elasticsearch_port_transport: 9300
+
+elasticsearch_heap_size: "{{ ansible_memtotal_mb // 2 }}m"
+
+elasticsearch_node_name: "{{ ansible_hostname }}"
+elasticsearch_cluster_name: elasticsearch
+elasticsearch_group_name: elasticsearch
+
+# elasticsearch_data_dir: /data
+
+elasticsearch_plugins_add: ["mobz/elasticsearch-head"]
+elasticsearch_plugins_remove: []

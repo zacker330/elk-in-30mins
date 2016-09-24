@@ -1,0 +1,23 @@
+---
+user: vagrant
+user_group: vagrant
+
+JAVA_HOME: /usr/lib/jvm/java
+#### elasticsearch
+elasticsearch_bind: 192.168.4.10
+elasticsearch_port_http: 9200
+elasticsearch_url: "http://{{elasticsearch_bind}}:{{elasticsearch_port_http}}"
+
+
+#### kibana
+kibana_server_host: 192.168.4.10
+
+#### analysis openresty
+analysis_domain_name: "192.168.4.10"
+access_log_path: "/var/log/nginx/access.log"
+error_log_path: "/var/log/nginx/error.log"
+
+#### openresty
+openresty_home: "/usr/local/openresty"
+nginx_conf: "{{openresty_home}}/nginx/conf/"
+nginx_servers_conf: "{{nginx_conf}}/servers"

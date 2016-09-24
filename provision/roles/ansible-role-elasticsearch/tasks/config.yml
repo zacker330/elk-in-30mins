@@ -1,0 +1,30 @@
+---
+# configuration tasks for elasticsearch
+
+- name: Configure elasticsearch.yml
+  template:
+    src: elasticsearch.yml.j2
+    dest: "{{ elasticsearch_config.master }}"
+    owner: "{{ elasticsearch_config.owner }}"
+    group: "{{ elasticsearch_config.group }}"
+    mode: 0640
+  notify:
+    restart elasticsearch
+
+- name: Configure logging.yml
+  template:
+    src: logging.yml.j2
+    dest: "{{ elasticsearch_config.logging }}"
+    owner: "{{ elasticsearch_config.owner }}"
+    group: "{{ elasticsearch_config.group }}"
+    mode: 0640
+  notify:
+    restart elasticsearch
+
+- name: Create data directory for ElasticSearch
+  file:
+    dest: "{{ elasticsearch_data_dir | default(elasticsearch_default_data_dir) }}"
+    state: directory
+    owner: "{{ elasticsearch_config.data }}"
+    group: "{{ elasticsearch_config.group }}"
+    mode: 0755

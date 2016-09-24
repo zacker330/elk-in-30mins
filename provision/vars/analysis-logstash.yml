@@ -1,0 +1,44 @@
+---
+logstash_inputs: |
+
+      file {
+                type=> "ad"
+                path => "/var/log/nginx/access.log"
+                start_position => beginning
+                sincedb_path => "/usr/local/logstash/.www.sincedb-file"
+      }
+
+logstash_filters: |
+
+        grok {
+            match => { "message" =>
+            '%{IPORHOST:clientip} - - \[%{HTTPDATE:timestamp}\] %{WORD:verb} %{NOTSPACE:request} HTTP/%{NUMBER:httpversion} %{QS:httpstatus} (?:%{NUMBER:response}|-) %{QS:referrer} %{QS:agent} %{QS:httpforwarded} (?:%{NUMBER:request_time}|-) (?:%{NUMBER:upstream_response_time}|-)'
+            }
+        }
+
+        date {
+          match => [ "timestamp" , "dd/MMM/yyyy:HH:mm:ss +0800" ]
+          timezone => "UTC"
+        }
+        geoip {
+            source => "clientip"
+        }
+        useragent {
+          source => "agent"
+        }
+        mutate {
+          convert => ["response", "integer"]
+          convert => ["bytes", "integer"]
+          convert => ["responsetime", "float"]
+          convert => ["httpstatus", "integer"]
+        }
+
+
+logstash_outputs: |
+
+    elasticsearch {
+      hosts => ["localhost:9200"]
+      index_type => "ad"
+      index => "logstash-ad-%{+YYYY.MM.dd}"
+    }
+    stdout { codec => rubydebug }

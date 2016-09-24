@@ -1,0 +1,60 @@
+---
+# tasks file for ansible-role-kibana-4
+
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+  tags: kibana
+
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+  tags: kibana
+
+- name: Install Kibana
+  package:
+    name: kibana
+    state: present
+  tags: kibana
+
+# TODO: Ansible 2.2 adds the systemd module
+- name: Enable Kibana on boot
+  service:
+    name: kibana
+    state: started
+    enabled: yes
+  tags: kibana
+
+- name: Configure Kibana
+  template:
+    src: kibana.yml.j2
+    dest: /opt/kibana/config/kibana.yml
+    owner: root
+    group: root
+    force: true
+    mode: 0664
+  notify: restart kibana
+  tags: kibana
+
+- name: Copy Kibana Nginx Configuration
+  template:
+    src: kibana.conf.j2
+    dest: "{{nginx_servers_conf}}/kibana.conf"
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - nginx
+    - kibana
+  notify: restart nginx
+
+- name: Create Kibana User Account
+  htpasswd:
+    path: /etc/nginx/conf.d/kibana-4.htpasswd
+    name: "{{ kibana_username }}"
+    password: "{{ kibana_password }}"
+    owner: root
+    group: "root"
+    mode: 0640
+  tags:
+    - nginx
+    - kibana
+  notify: restart nginx

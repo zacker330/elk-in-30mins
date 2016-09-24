@@ -1,0 +1,71 @@
+- hosts: analysis
+  sudo: yes
+  vars_files:
+    - ./vars/base-env.yml
+    - ./vars/analysis-logstash.yml
+
+  vars:
+    - logstash_javacmd: "{{JAVA_HOME}}/bin/java"
+
+    - logstash_input_configs: |
+        file {
+                  type=> "ad"
+                  path => "/var/log/nginx/access.log"
+                  start_position => beginning
+                  sincedb_path => "/usr/local/logstash/.www.sincedb-file"
+                  tags => ["ad"]
+        }
+
+    - logstash_filter_configs: |
+        grok {
+            match => {
+            "message" => '\[%{HTTPDATE:timestamp}\] %{IPORHOST:clientip} (?:%{QS:event}|-) (?:%{QS:position}|-) (?:%{QS:account}|-) (?:%{QS:url}|-) (?:%{QS:title}|-) (?:%{QS:referrer}|-) (?:%{NUMBER:sh}|-) (?:%{NUMBER:sw}|-) (?:%{NUMBER:cd}|-) (?:%{QS:lang}|-) (?:%{QS:utrace}|-) (?:%{QS:agent}|-) '
+            }
+        }
+
+        date {
+          match => [ "timestamp" , "dd/MMM/yyyy:HH:mm:ss +0800" ]
+          timezone => "UTC"
+        }
+        geoip {
+          source => "clientip"
+        }
+
+        useragent {
+          target => "useragent"
+          source => "agent"
+        }
+        # kv {
+        #     target => "parameters"
+        #     field_split => "&?"
+        #     source => "request"
+        #     exclude_keys => ["callback"]
+        # }
+        #
+        # kv {
+        #     target => "cookies"
+        #     field_split => ";"
+        #     include_keys => ["oscid"]
+        #     source => "cookie"
+        #     exclude_keys => ["callback"]
+        # }
+
+        mutate {
+          convert => ["response", "integer"]
+          convert => ["bytes", "integer"]
+          convert => ["responsetime", "float"]
+          rename => { "name" => "browser" }
+          remove_field => ["cookie", "agent"]
+        }
+    - logstash_output_configs: |
+        elasticsearch {
+            hosts => ["http://192.168.4.10:9200"]
+            index => "logstash-ad-%{+YYYY.MM.dd}"
+            document_type => "%{[@metadata][type]}"
+          }
+        stdout { codec => rubydebug }
+
+
+
+  roles:
+    - ansible-logstash

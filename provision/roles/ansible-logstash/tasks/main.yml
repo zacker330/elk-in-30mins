@@ -1,0 +1,81 @@
+---
+- name: Download and install logstash apt public signing key
+  apt_key: url="{{ logstash_signing_key_url }}" state=present
+
+
+- name: Add logstash apt repository definition to apt sources list
+  apt_repository: repo="{{ logstash_apt_repo }}" update_cache=yes state=present
+
+- name: Install logstash
+  apt: name=logstash state=present
+
+- name: Ensure logstash home dir is created
+  file:
+    path:  "{{ logstash_home_dir }}"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+    mode:  0775
+    state: directory
+
+- name: Create logstash input config
+  template:
+    src:   input.conf.j2
+    dest:  "{{ logstash_conf_dir }}/10-input.conf"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+    mode:  0644
+  when: logstash_input_configs
+  notify:
+    - Validate logstash config
+    - Restart logstash
+
+- name: Create logstash filter config
+  template:
+    src:   filter.conf.j2
+    dest:  "{{ logstash_conf_dir }}/20-filter.conf"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+    mode:  0644
+  when: logstash_filter_configs
+  notify:
+    - Validate logstash config
+    - Restart logstash
+
+- name: Create logstash output config
+  template:
+    src:   output.conf.j2
+    dest:  "{{ logstash_conf_dir }}/30-output.conf"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+    mode:  0644
+  when: logstash_output_configs
+  notify:
+    - Validate logstash config
+    - Restart logstash
+
+- name: add java path into service script
+  lineinfile:
+    state: present
+    dest: "/etc/init.d/logstash"
+    insertbefore: "^export PATH"
+    line: |
+        JAVA_HOME={{JAVA_HOME}}
+        PATH=$PATH:${JAVA_HOME}/bin
+  notify:
+    - Validate logstash config
+    - Restart logstash
+
+
+- name: Create logstash default settings file
+  template:
+    src:   etc.default.logstash.j2
+    dest:  "/etc/default/logstash"
+    force: true
+    owner: root
+    group: root
+    mode:  0644
+  notify:
+    - Restart logstash
+
+- name: Start logstash
+  service: name=logstash enabled=yes state=started
