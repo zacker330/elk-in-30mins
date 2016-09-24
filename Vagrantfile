@@ -13,7 +13,6 @@ Vagrant.configure(2) do |config|
 
 
 
-  ## master分支的代码，
   config.vm.define "oscadcenter" do |machine|
     machine.vm.box = machine_box
     machine.vm.box_url = machine_box_url
@@ -26,7 +25,6 @@ Vagrant.configure(2) do |config|
         node.cpus = 2
     end
    end
-
 
 
 end

@@ -1,8 +1,7 @@
 
-	log_format  ad_log '[$time_local] $remote_addr "$arg_event" "$arg_position"'
-	 ' "$arg_ad "$arg_account" "$arg_url" "$arg_title" "$arg_referrer" $arg_sh $arg_sw $arg_cd'
-	 ' "$arg_lang" "$arg_utrace" "$http_user_agent"';
-
+log_format  ad_log '[$time_local] $remote_addr "$arg_event" "$arg_position"'
+ ' "$arg_ad" "$arg_account" "$arg_url" "$arg_title" "$arg_referrer" $arg_sh $arg_sw $arg_cd'
+ ' "$arg_lang" "$arg_utrace" "$http_user_agent"';
 
 	server {
 		listen 80;

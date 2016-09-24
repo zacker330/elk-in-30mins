@@ -5,7 +5,7 @@
 - name: copy sources.list
   copy: src="sources.list" dest="/etc/apt/" force=yes
 
-- apt: update_cache=yes cache_valid_time=72000  autoremove=yes upgrade=safe
+- apt: update_cache=yes cache_valid_time=72000 
   ignore_errors: yes
 
 

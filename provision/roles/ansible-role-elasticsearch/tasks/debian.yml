@@ -7,13 +7,15 @@
   apt:
     name: apt-transport-https
     state: installed
+  retries: 5
 
 - name: Install ElasticSearch repository
   apt_repository:
     repo: "deb {{ elasticsearch_repository.url }} {{ elasticsearch_repository.type }}"
     filename: elasticsearch
     state: present
-    
+  retries: 5
+
 - apt: update_cache=yes cache_valid_time=72000  autoremove=yes upgrade=safe
   ignore_errors: yes
 
@@ -24,6 +26,7 @@
     state: installed
   with_items:
     "{{ elasticsearch_packages }}"
+  retries: 5
 
 - name: Configure ElasticSearch Defaults
   template:

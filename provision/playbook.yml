@@ -15,14 +15,14 @@
                   type=> "ad"
                   path => "/var/log/nginx/access.log"
                   start_position => beginning
-                  sincedb_path => "/usr/local/logstash/.www.sincedb-file"
+                  sincedb_path => "{{ logstash_conf_dir }}/.logstash.sincedb-file"
                   tags => ["ad"]
         }
 
     - logstash_filter_configs: |
         grok {
             match => {
-            "message" => '\[%{HTTPDATE:timestamp}\] %{IPORHOST:clientip} (?:%{QS:event}|-) (?:%{QS:position}|-) (?:%{QS:adid}|-) (?:%{QS:account}|-) (?:%{QS:url}|-) (?:%{QS:title}|-) (?:%{QS:referrer}|-) (?:%{NUMBER:sh}|-) (?:%{NUMBER:sw}|-) (?:%{NUMBER:cd}|-) (?:%{QS:lang}|-) (?:%{QS:utrace}|-) (?:%{QS:agent}|-) '
+            "message" => '\[%{HTTPDATE:timestamp}\] %{IPORHOST:clientip} (?:%{QS:event}|-) (?:%{QS:position}|-) (?:%{QS:adid}|-) (?:%{QS:account}|-) (?:%{QS:url}|-) (?:%{QS:title}|-) (?:%{QS:referrer}|-) (?:%{NUMBER:sh}|-) (?:%{NUMBER:sw}|-) (?:%{NUMBER:cd}|-) (?:%{QS:lang}|-) (?:%{QS:utrace}|-) (?:%{QS:agent}|-)'
             }
         }
 
